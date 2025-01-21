@@ -1,89 +1,110 @@
 package;
-#if windows 
-import flixel.graphics.FlxGraphic;
-import flixel.FlxG;
-import flixel.FlxSprite;
-import flixel.FlxState;
+
 import flixel.util.FlxColor;
-import flixel.util.FlxTimer;
+import flixel.FlxG;
+import flixel.FlxState;
 import openfl.events.Event;
+import openfl.media.Video;
+import openfl.net.NetConnection;
+import openfl.net.NetStream;
 import vlc.VlcBitmap;
+import Controls.Control;
+import flixel.util.FlxTimer;
+import flixel.FlxSprite;
 
 // THIS IS FOR TESTING
 // DONT STEAL MY CODE >:(
-// I stole it
+
 class MP4Handler
 {
-	public var finishCallback:Void->Void;
-	public var stateCallback:FlxState;
-
-	public var bitmap:VlcBitmap;
-
-	var killed:Bool = false;
-
+	public static var video:Video;
+	public static var netStream:NetStream;
+	public static var finishCallback:FlxState;
 	public var sprite:FlxSprite;
+	#if desktop
+	public static var vlcBitmap:VlcBitmap;
+	#end
 
 	public function new()
 	{
-		// FlxG.autoPause = false;
+
+		FlxG.autoPause = false;
+
+		if (FlxG.sound.music != null)
+		{
+			FlxG.sound.music.stop();
+		}
 	}
 
-	public function playMP4(path:String, ?repeat:Bool = false, ?outputTo:FlxSprite = null, ?isWindow:Bool = false, ?isFullscreen:Bool = false,
-			?midSong:Bool = false):Void
+	public function playMP4(path:String, callback:FlxState, ?outputTo:FlxSprite = null, ?repeat:Bool = false, ?isWindow:Bool = false, ?isFullscreen:Bool = false):Void
 	{
-		if (killed)
-			return;
-		if (!midSong)
+		#if html5
+		FlxG.autoPause = false;
+
+		if (FlxG.sound.music != null)
 		{
-			if (FlxG.sound.music != null)
-			{
-				FlxG.sound.music.stop();
-			}
+			FlxG.sound.music.stop();
 		}
 
-		bitmap = new VlcBitmap();
+		finishCallback = callback;
 
-		if (FlxG.stage.stageHeight / 9 < FlxG.stage.stageWidth / 16)
-		{
-			bitmap.set_width(FlxG.stage.stageHeight * (16 / 9));
-			bitmap.set_height(FlxG.stage.stageHeight);
-		}
-		else
-		{
-			bitmap.set_width(FlxG.stage.stageWidth);
-			bitmap.set_height(FlxG.stage.stageWidth / (16 / 9));
-		}
+		video = new Video();
+		video.x = 0;
+		video.y = 0;
 
-		bitmap.onVideoReady = onVLCVideoReady;
-		bitmap.onComplete = onVLCComplete;
-		bitmap.onError = onVLCError;
+		FlxG.addChildBelowMouse(video);
+
+		var nc = new NetConnection();
+		nc.connect(null);
+
+		netStream = new NetStream(nc);
+		netStream.client = {onMetaData: client_onMetaData};
+
+		nc.addEventListener("netStatus", netConnection_onNetStatus);
+
+		netStream.play(path);
+		#else
+		finishCallback = callback;
+
+		vlcBitmap = new VlcBitmap();
+		vlcBitmap.set_height(FlxG.stage.stageHeight);
+		vlcBitmap.set_width(FlxG.stage.stageHeight * (16 / 9));
+
+		trace("Setting width to " + FlxG.stage.stageHeight * (16 / 9));
+		trace("Setting height to " + FlxG.stage.stageHeight);
+
+		vlcBitmap.onVideoReady = onVLCVideoReady;
+		vlcBitmap.onComplete = onVLCComplete;
+		vlcBitmap.onError = onVLCError;
 
 		FlxG.stage.addEventListener(Event.ENTER_FRAME, update);
 
 		if (repeat)
-			bitmap.repeat = -1;
+			vlcBitmap.repeat = -1;
 		else
-			bitmap.repeat = 0;
+			vlcBitmap.repeat = 0;
 
-		bitmap.inWindow = isWindow;
-		bitmap.fullscreen = isFullscreen;
+		vlcBitmap.inWindow = isWindow;
+		vlcBitmap.fullscreen = isFullscreen;
 
-		FlxG.addChildBelowMouse(bitmap);
-		bitmap.play(checkFile(path));
-
+		FlxG.addChildBelowMouse(vlcBitmap);
+		vlcBitmap.play(checkFile(path));
+		
 		if (outputTo != null)
 		{
 			// lol this is bad kek
-			bitmap.alpha = 0;
-
+			vlcBitmap.alpha = 0;
+	
 			sprite = outputTo;
 		}
+		#end
 	}
 
+	#if desktop
 	function checkFile(fileName:String):String
 	{
 		var pDir = "";
-		var appDir = "file:///" + Sys.getCwd();
+		var appDir = "file:///" + Sys.getCwd() + "/";
 
 		if (fileName.indexOf(":") == -1) // Not a path
 			pDir = appDir;
@@ -97,100 +118,108 @@ class MP4Handler
 
 	function onVLCVideoReady()
 	{
-		if (killed)
-			return;
-		Debug.logTrace("video loaded!");
-
-		if (sprite != null && !bitmap.isDisposed && bitmap.bitmapData != null)
-		{
-			var graph:FlxGraphic = FlxG.bitmap.add(bitmap.bitmapData, false, "");
-
-			Debug.logTrace(graph.imageFrame);
-
-			// super fucking weird behavoir where this just breaks when leaving cooling, something cuz of somethin ig.
-			// fixed cuz of these statements.
-
-			if (graph.imageFrame.frame == null)
-				return;
-
-			if (graph.imageFrame.frame.name == null)
-			{
-				if (killed || PauseSubState.FUCKINGDONTDOITVLCMEDIAPLAYERISWEARTOGOD)
-					return;
-			}
-
-			Debug.logTrace("here is your graphic big man " + bitmap.videoWidth + "x" + bitmap.videoHeight + " " + bitmap.bitmapData.height);
-			sprite.loadGraphic(graph);
-
-			sprite.setGraphicSize(945, 472);
-		}
+		trace("video loaded!");
+		if (sprite != null)
+			sprite.loadGraphic(vlcBitmap.bitmapData);	
+		PlayState.isStoryMode = true;
 	}
 
 	public function onVLCComplete()
 	{
-		if (killed)
-			return;
-		bitmap.stop();
+		vlcBitmap.stop();
 
 		// Clean player, just in case! Actually no.
 
-		Debug.logTrace("Big, Big Chungus, Big Chungus!");
+		FlxG.camera.fade(FlxColor.BLACK, 0, false);
 
-		new FlxTimer().start(0.3, function(tmr:FlxTimer)
+
+		trace("Big, Big Chungus, Big Chungus!");
+
+		new FlxTimer().start(0.3, function (tmr:FlxTimer)
 		{
 			if (finishCallback != null)
 			{
-				finishCallback();
+				LoadingState.loadAndSwitchState(finishCallback);
 			}
-			else if (stateCallback != null)
-			{
-				LoadingState.loadAndSwitchState(stateCallback);
-			}
+			vlcBitmap.dispose();
 
-			bitmap.dispose();
-
-			if (FlxG.game.contains(bitmap))
+			if (FlxG.game.contains(vlcBitmap))
 			{
-				FlxG.game.removeChild(bitmap);
-			}
+				FlxG.game.removeChild(vlcBitmap);
+			}	
 		});
-	}
+		
 
-	public function kill()
-	{
-		killed = true;
-		bitmap.stop();
-
-		if (finishCallback != null)
-		{
-			finishCallback();
-		}
-
-		bitmap.visible = false;
 	}
 
 	function onVLCError()
 	{
-		if (killed)
-			return;
 		if (finishCallback != null)
 		{
-			finishCallback();
-		}
-		else if (stateCallback != null)
-		{
-			LoadingState.loadAndSwitchState(stateCallback);
+			LoadingState.loadAndSwitchState(finishCallback);
 		}
 	}
 
 	function update(e:Event)
 	{
-		if (killed)
-			return;
-		bitmap.volume = FlxG.sound.volume + 0.3; // shitty volume fix. then make it louder.
-
-		if (FlxG.sound.volume <= 0.1)
-			bitmap.volume = 0;
+		if (FlxG.keys.justPressed.ENTER || FlxG.keys.justPressed.SPACE)
+		{
+			if (vlcBitmap.isPlaying)
+			{
+				onVLCComplete();
+			}
+		}
+		vlcBitmap.volume = FlxG.sound.volume + 0.3; // shitty volume fix. then make it louder.
+		if (FlxG.sound.volume <= 0.1) vlcBitmap.volume = 0;
 	}
+	#end
+
+	/////////////////////////////////////////////////////////////////////////////////////
+
+	function client_onMetaData(path)
+	{
+		video.attachNetStream(netStream);
+
+		video.width = FlxG.width;
+		video.height = FlxG.height;
+	}
+
+	function netConnection_onNetStatus(path)
+	{
+		if (path.info.code == "NetStream.Play.Complete")
+		{
+			finishVideo();
+		}
+	}
+
+	function finishVideo()
+	{
+		netStream.dispose();
+
+		if (FlxG.game.contains(video))
+		{
+			FlxG.game.removeChild(video);
+		}
+
+		if (finishCallback != null)
+		{
+			LoadingState.loadAndSwitchState(finishCallback);
+		}
+		else
+			LoadingState.loadAndSwitchState(new MainMenuState());
+	}
+
+	// old html5 player
+	/*
+		var nc:NetConnection = new NetConnection();
+		nc.connect(null);
+		var ns:NetStream = new NetStream(nc);
+		var myVideo:Video = new Video();
+		myVideo.width = FlxG.width;
+		myVideo.height = FlxG.height;
+		myVideo.attachNetStream(ns);
+		ns.play(path);
+		return myVideo;
+		ns.close();
+	 */
 }
-#end
