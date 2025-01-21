@@ -6,7 +6,7 @@ import flixel.FlxState;
 import flixel.util.FlxColor;
 import flixel.util.FlxTimer;
 import openfl.events.Event;
-import vlc.VlcBitmap;
+import vlc.VlcVlcBitmap;
 
 // THIS IS FOR TESTING
 // DONT STEAL MY CODE >:(
@@ -14,9 +14,7 @@ class MP4Handler
 {
 	public var finishCallback:Void->Void;
 	public var stateCallback:FlxState;
-
-	public var bitmap:VlcBitmap;
-
+	
 	public var sprite:FlxSprite;
 
 	public function new()
@@ -35,42 +33,42 @@ class MP4Handler
 			}
 		}
 
-		bitmap = new VlcBitmap();
+		VlcBitmap = new VlcBitmap();
 
 		if (FlxG.stage.stageHeight / 9 < FlxG.stage.stageWidth / 16)
 		{
-			bitmap.set_width(FlxG.stage.stageHeight * (16 / 9));
-			bitmap.set_height(FlxG.stage.stageHeight);
+			VlcBitmap.set_width(FlxG.stage.stageHeight * (16 / 9));
+			VlcBitmap.set_height(FlxG.stage.stageHeight);
 		}
 		else
 		{
-			bitmap.set_width(FlxG.stage.stageWidth);
-			bitmap.set_height(FlxG.stage.stageWidth / (16 / 9));
+			VlcBitmap.set_width(FlxG.stage.stageWidth);
+			VlcBitmap.set_height(FlxG.stage.stageWidth / (16 / 9));
 		}
 
 		
 
-		bitmap.onVideoReady = onVLCVideoReady;
-		bitmap.onComplete = onVLCComplete;
-		bitmap.onError = onVLCError;
+		VlcBitmap.onVideoReady = onVLCVideoReady;
+		VlcBitmap.onComplete = onVLCComplete;
+		VlcBitmap.onError = onVLCError;
 
 		FlxG.stage.addEventListener(Event.ENTER_FRAME, update);
 
 		if (repeat)
-			bitmap.repeat = -1;
+			VlcBitmap.repeat = -1;
 		else
-			bitmap.repeat = 0;
+			VlcBitmap.repeat = 0;
 
-		bitmap.inWindow = isWindow;
-		bitmap.fullscreen = isFullscreen;
+		VlcBitmap.inWindow = isWindow;
+		VlcBitmap.fullscreen = isFullscreen;
 
-		FlxG.addChildBelowMouse(bitmap);
-		bitmap.play(checkFile(path));
+		FlxG.addChildBelowMouse(VlcBitmap);
+		VlcBitmap.play(checkFile(path));
 
 		if (outputTo != null)
 		{
 			// lol this is bad kek
-			bitmap.alpha = 0;
+			VlcBitmap.alpha = 0;
 
 			sprite = outputTo;
 		}
@@ -96,12 +94,12 @@ class MP4Handler
 		trace("video loaded!");
 
 		if (sprite != null)
-			sprite.loadGraphic(bitmap.bitmapData);
+			sprite.loadGraphic(VlcBitmap.VlcBitmapData);
 	}
 
 	public function onVLCComplete()
 	{
-		bitmap.stop();
+		VlcBitmap.stop();
 
 		// Clean player, just in case! Actually no.
 
@@ -120,25 +118,25 @@ class MP4Handler
 				LoadingState.loadAndSwitchState(stateCallback);
 			}
 
-			bitmap.dispose();
+			VlcBitmap.dispose();
 
-			if (FlxG.game.contains(bitmap))
+			if (FlxG.game.contains(VlcBitmap))
 			{
-				FlxG.game.removeChild(bitmap);
+				FlxG.game.removeChild(VlcBitmap);
 			}
 		});
 	}
 
 	public function kill()
 	{
-		bitmap.stop();
+		VlcBitmap.stop();
 
 		if (finishCallback != null)
 		{
 			finishCallback();
 		}
 
-		bitmap.visible = false;
+		VlcBitmap.visible = false;
 	}
 
 	function onVLCError()
@@ -157,15 +155,15 @@ class MP4Handler
 	{
 		if (FlxG.keys.justPressed.ENTER || FlxG.keys.justPressed.SPACE)
 		{
-			if (bitmap.isPlaying)
+			if (VlcBitmap.isPlaying)
 			{
 				onVLCComplete();
 			}
 		}
 
-		bitmap.volume = FlxG.sound.volume + 0.3; // shitty volume fix. then make it louder.
+		VlcBitmap.volume = FlxG.sound.volume + 0.3; // shitty volume fix. then make it louder.
 
 		if (FlxG.sound.volume <= 0.1)
-			bitmap.volume = 0;
+			VlcBitmap.volume = 0;
 	}
 }
