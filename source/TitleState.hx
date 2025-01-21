@@ -59,19 +59,9 @@ class TitleState extends MusicBeatState
 
 		FlxG.worldBounds.set(0, 0);
 
-		#if polymod
-		polymod.Polymod.init({modRoot: "mods", dirs: ['introMod']});
+		#if android
+		FlxG.android.preventDefaultKeys = [BACK];
 		#end
-
-		#if sys
-		if (!sys.FileSystem.exists(Sys.getCwd() + "/assets/replays"))
-			sys.FileSystem.createDirectory(Sys.getCwd() + "/assets/replays");
-		#end
-
-		@:privateAccess
-		{
-			trace("Loaded " + openfl.Assets.getLibrary("default").assetsLoaded + " assets (DEFAULT)");
-		}
 
 		PlayerSettings.init();
 
@@ -274,34 +264,28 @@ class TitleState extends MusicBeatState
 		var pressedEnter:Bool = controls.ACCEPT;
 
 		#if mobile
-		for (touch in FlxG.touches.list)
-		{
-			if (touch.justPressed)
-			{
-				pressedEnter = true;
-			}
-		}
-		#end
+        addVirtualPad(LEFT_FULL, A_B);
+        #end
 
-		if (FlxG.keys.justPressed.UP)
+		if (FlxG.keys.justPressed.UP || controls.UP_P)
 			if (code == 0)
 				code = 1;
 			else
 				code == 0;
 
-		if (FlxG.keys.justPressed.DOWN)
+		if (FlxG.keys.justPressed.DOWN || controls.DOWN_P)
 			if (code == 1)
 				code = 2;
 			else
 				code == 0;
 
-		if (FlxG.keys.justPressed.LEFT)
+		if (FlxG.keys.justPressed.LEFT || controls.LEFT_P)
 			if (code == 2)
 				code = 3;
 			else
 				code == 0;
 
-		if (FlxG.keys.justPressed.RIGHT)
+		if (FlxG.keys.justPressed.RIGHT || controls.RIGHT_P)
 			if (code == 3)
 				code = 4;
 			else

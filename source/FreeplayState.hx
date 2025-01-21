@@ -117,6 +117,10 @@ class FreeplayState extends MusicBeatState // REWRITE FREEPLAY!?!?!? HELL YEA!!!
 		 #end
 
 		add(whiteshit);
+		
+		#if mobile
+        addVirtualPad(UP_DOWN, A_B);
+        #end
 
 		super.create();
 	}
@@ -127,8 +131,8 @@ class FreeplayState extends MusicBeatState // REWRITE FREEPLAY!?!?!? HELL YEA!!!
 	{
 		super.update(elapsed);
 
-		var upP = FlxG.keys.justPressed.LEFT || FlxG.keys.justPressed.A;
-		var downP = FlxG.keys.justPressed.RIGHT || FlxG.keys.justPressed.D;
+		var upP = controls.UP_P || FlxG.keys.justPressed.A;
+		var downP = controls.DOWN_P || FlxG.keys.justPressed.D;
 		var accepted = controls.ACCEPT;
 		
 		

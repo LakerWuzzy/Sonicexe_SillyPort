@@ -324,8 +324,16 @@ class GameOverSubstate extends MusicBeatSubstate
 	override function update(elapsed:Float)
 	{
 		super.update(elapsed);
+		
+		#if mobile
+        var jusTouched:Bool = false;
 
-		if (controls.ACCEPT)
+        for (touch in FlxG.touches.list)
+          if (touch.justPressed)
+            jusTouched = true;
+        #end
+
+		if (controls.ACCEPT #if mobile || jusTouched #end)
 		{
 			if (!toolateurfucked)
 			{
@@ -334,7 +342,7 @@ class GameOverSubstate extends MusicBeatSubstate
 			}
 		}
 
-		if (controls.BACK)
+		if (controls.BACK #if android || FlxG.android.justReleased.BACK #end)
 		{
 			if (!toolateurfucked)
 			{

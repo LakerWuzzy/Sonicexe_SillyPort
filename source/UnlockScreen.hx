@@ -46,7 +46,15 @@ class UnlockScreen extends MusicBeatState
 
     override function update(elapsed:Float)
     {
-        if (controls.ACCEPT)
+	    #if mobile
+        var jusTouched:Bool = false;
+
+        for (touch in FlxG.touches.list)
+          if (touch.justPressed)
+            jusTouched = true;
+        #end
+    
+        if (controls.ACCEPT #if mobile || jusTouched #end)
         {
             LoadingState.loadAndSwitchState(new MainMenuState());
         }
