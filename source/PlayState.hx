@@ -5013,7 +5013,6 @@ class PlayState extends MusicBeatState
 					isList = false;
 
 					if (curSong == 'triple-trouble')
-					{
 						FlxG.switchState(new MainMenuState());
 
 					#if windows
@@ -5070,20 +5069,69 @@ class PlayState extends MusicBeatState
 					FlxG.sound.music.stop();
 
 					if (curSong.toLowerCase() == 'too-slow' && storyDifficulty == 2)
+					{
 						FlxG.save.data.storyProgress = 1;
-						
+					}
 					else if (curSong.toLowerCase() == 'too-slow' && storyDifficulty != 2)
+					{
 						LoadingState.loadAndSwitchState(new UnlockScreen(false, 'soundtest'));
-						
+					}
 					else if (curSong == 'you-cant-run')
 					{
 						FlxG.save.data.storyProgress = 2;
 						FlxG.save.data.soundTestUnlocked = true;
+						{
+							LoadingState.loadAndSwitchState(new PlayState());
+						}
+					}
+					else
 						LoadingState.loadAndSwitchState(new PlayState());
 
 					if (curSong == 'faker')
 						if (!FlxG.save.data.songArray.contains('black-sun') && !FlxG.save.data.botplay)
 							FlxG.save.data.songArray.push('black-sun');
+				}
+			}
+			else
+			{
+				trace('WENT BACK TO FREEPLAY??');
+
+				paused = true;
+
+				FlxG.sound.music.stop();
+				vocals.stop();
+
+				PlayStateChangeables.nocheese = true;
+				switch (curSong)
+				{
+					default:
+						if (!isFreeplay)
+							FlxG.switchState(new SoundTestMenu());
+						else
+						{
+							isFreeplay = false;
+							FlxG.switchState(new FreeplayState());
+						}
+					case "milk":
+						if (!isFreeplay)
+							FlxG.switchState(new MainMenuState());
+						else
+						{
+							isFreeplay = false;
+							FlxG.switchState(new FreeplayState());
+						}
+					case 'too-slow':
+						{
+							LoadingState.loadAndSwitchState(new MainMenuState());
+						}
+					case 'you-cant-run':
+						{
+							LoadingState.loadAndSwitchState(new MainMenuState());
+						}
+					case 'triple-trouble':
+						{
+							LoadingState.loadAndSwitchState(new MainMenuState());
+						}
 				}
 			}
 		}
