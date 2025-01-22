@@ -64,9 +64,9 @@ abstract Action(String) to String from String
 	var RESET = "reset";
 	var CHEAT = "cheat";
 
-	var SPACEB = 'space';
-	var SPACE_P = 'space-press';
-	var SPACE_R = 'space-release';
+	var SPACEB = 'up';
+	var SPACE_P = 'up-press';
+	var SPACE_R = 'up-release';
 }
 #end
 

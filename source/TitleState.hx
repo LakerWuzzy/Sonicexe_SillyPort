@@ -202,6 +202,10 @@ class TitleState extends MusicBeatState
 		credGroup = new FlxGroup();
 		add(credGroup);
 		textGroup = new FlxGroup();
+		
+		#if mobile
+        addVirtualPad(LEFT_FULL, A);
+        #end
 
 		blackScreen = new FlxSprite().makeGraphic(FlxG.width, FlxG.height, FlxColor.BLACK);
 		credGroup.add(blackScreen);
@@ -263,29 +267,25 @@ class TitleState extends MusicBeatState
 
 		var pressedEnter:Bool = controls.ACCEPT;
 
-		#if mobile
-        addVirtualPad(LEFT_FULL, A_B);
-        #end
-
-		if (FlxG.keys.justPressed.UP || controls.UP_P)
+		if (controls.UP_P)
 			if (code == 0)
 				code = 1;
 			else
 				code == 0;
 
-		if (FlxG.keys.justPressed.DOWN || controls.DOWN_P)
+		if (controls.DOWN_P)
 			if (code == 1)
 				code = 2;
 			else
 				code == 0;
 
-		if (FlxG.keys.justPressed.LEFT || controls.LEFT_P)
+		if (controls.LEFT_P)
 			if (code == 2)
 				code = 3;
 			else
 				code == 0;
 
-		if (FlxG.keys.justPressed.RIGHT || controls.RIGHT_P)
+		if (controls.RIGHT_P)
 			if (code == 3)
 				code = 4;
 			else
