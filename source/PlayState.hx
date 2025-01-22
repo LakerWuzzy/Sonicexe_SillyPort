@@ -63,9 +63,6 @@ import openfl.utils.AssetType;
 
 using StringTools;
 
-#if cpp
-import webm.WebmPlayer;
-#end
 #if windows
 import Discord.DiscordClient;
 #end
@@ -558,8 +555,6 @@ class PlayState extends MusicBeatState
 			case 'philly-nice':
 				songLowercase = 'philly';
 		}
-
-		removedVideo = false;
 
 		#if windows
 		executeModchart = FileSystem.exists(Paths.lua(songLowercase + "/modchart"));
@@ -2061,9 +2056,6 @@ class PlayState extends MusicBeatState
 					});
 				/*
 					case: 'cant-run':
-						var video:MP4Handler = new MP4Handler();
-
-						video.playMP4(Paths.video('sonic1'), function()
 					   					{
 							FlxG.camera.fade(FlxColor.BLACK, 0, true);
 							startSong();
@@ -3297,9 +3289,6 @@ class PlayState extends MusicBeatState
 				allowedToHeadbang = false;
 		}
 
-		if (useVideo)
-			GlobalVideo.get().resume();
-
 		#if windows
 		// Updating Discord Rich Presence (with Time Left)
 		DiscordClient.changePresence(detailsText
@@ -3882,8 +3871,7 @@ class PlayState extends MusicBeatState
 	var spookyStatic:FlxSprite;
 
 	public var stopUpdate = false;
-	public var removedVideo = false;
-
+	
 	override public function update(elapsed:Float)
 	{
 		if (curSong == 'chaos' && dad.curCharacter == 'fleetway-extras3' && dad.animation.curAnim.curFrame == 15 && !dodging)
@@ -3942,17 +3930,6 @@ class PlayState extends MusicBeatState
 
 		if (PlayStateChangeables.botPlay && FlxG.keys.justPressed.ONE)
 			camHUD.visible = !camHUD.visible;
-
-		if (useVideo && GlobalVideo.get() != null && !stopUpdate)
-		{
-			if (GlobalVideo.get().ended && !removedVideo)
-			{
-				remove(videoSprite);
-				FlxG.stage.window.onFocusOut.remove(focusOut);
-				FlxG.stage.window.onFocusIn.remove(focusIn);
-				removedVideo = true;
-			}
-		}
 
 		#if windows
 		if (executeModchart && luaModchart != null && songStarted)
@@ -4079,14 +4056,6 @@ class PlayState extends MusicBeatState
 
 		if (FlxG.keys.justPressed.SEVEN)
 		{
-			if (useVideo)
-			{
-				GlobalVideo.get().stop();
-				remove(videoSprite);
-				FlxG.stage.window.onFocusOut.remove(focusOut);
-				FlxG.stage.window.onFocusIn.remove(focusIn);
-				removedVideo = true;
-			}
 			#if windows
 			DiscordClient.changePresence("Chart Editor", null, null, true);
 			#end
@@ -4159,15 +4128,6 @@ class PlayState extends MusicBeatState
 		#if debug
 		if (FlxG.keys.justPressed.SIX)
 		{
-			if (useVideo)
-			{
-				GlobalVideo.get().stop();
-				remove(videoSprite);
-				FlxG.stage.window.onFocusOut.remove(focusOut);
-				FlxG.stage.window.onFocusIn.remove(focusIn);
-				removedVideo = true;
-			}
-
 			FlxG.switchState(new AnimationDebug(dad.curCharacter));
 			FlxG.stage.removeEventListener(KeyboardEvent.KEY_DOWN, handleInput);
 			FlxG.stage.removeEventListener(KeyboardEvent.KEY_UP, releaseInput);
@@ -4182,15 +4142,6 @@ class PlayState extends MusicBeatState
 
 		if (FlxG.keys.justPressed.EIGHT)
 		{
-			if (useVideo)
-			{
-				GlobalVideo.get().stop();
-				remove(videoSprite);
-				FlxG.stage.window.onFocusOut.remove(focusOut);
-				FlxG.stage.window.onFocusIn.remove(focusIn);
-				removedVideo = true;
-			}
-
 			FlxG.switchState(new AnimationDebug(gf.curCharacter));
 			FlxG.stage.removeEventListener(KeyboardEvent.KEY_DOWN, handleInput);
 			FlxG.stage.removeEventListener(KeyboardEvent.KEY_UP, releaseInput);
@@ -4978,13 +4929,6 @@ class PlayState extends MusicBeatState
 
 		FlxG.stage.removeEventListener(KeyboardEvent.KEY_DOWN, handleInput);
 		FlxG.stage.removeEventListener(KeyboardEvent.KEY_UP, releaseInput);
-		if (useVideo)
-		{
-			GlobalVideo.get().stop();
-			FlxG.stage.window.onFocusOut.remove(focusOut);
-			FlxG.stage.window.onFocusIn.remove(focusIn);
-			PlayState.instance.remove(PlayState.instance.videoSprite);
-		}
 
 		if (isStoryMode)
 			campaignMisses = misses;
@@ -5070,14 +5014,6 @@ class PlayState extends MusicBeatState
 
 					if (curSong == 'triple-trouble')
 					{
-						var video:MP4Handler = new MP4Handler();
-						video.playMP4(Paths.video('soundtestcodes'));
-						video.finishCallback = function()
-						{
-							LoadingState.loadAndSwitchState(new MainMenuState());
-						}
-					}
-					else
 						FlxG.switchState(new MainMenuState());
 
 					#if windows
@@ -5136,12 +5072,6 @@ class PlayState extends MusicBeatState
 					if (curSong.toLowerCase() == 'too-slow' && storyDifficulty == 2)
 					{
 						FlxG.save.data.storyProgress = 1;
-						var video:MP4Handler = new MP4Handler();
-						video.playMP4(Paths.video('tooslowcutscene2'));
-						video.finishCallback = function()
-						{
-							LoadingState.loadAndSwitchState(new PlayState());
-						}
 					}
 					else if (curSong.toLowerCase() == 'too-slow' && storyDifficulty != 2)
 					{
@@ -5151,9 +5081,6 @@ class PlayState extends MusicBeatState
 					{
 						FlxG.save.data.storyProgress = 2;
 						FlxG.save.data.soundTestUnlocked = true;
-						var video:MP4Handler = new MP4Handler();
-						video.playMP4(Paths.video('youcantruncutscene2'));
-						video.finishCallback = function()
 						{
 							LoadingState.loadAndSwitchState(new PlayState());
 						}
@@ -5195,23 +5122,14 @@ class PlayState extends MusicBeatState
 							FlxG.switchState(new FreeplayState());
 						}
 					case 'too-slow':
-						var video:MP4Handler = new MP4Handler();
-						video.playMP4(Paths.video('tooslowcutscene2'));
-						video.finishCallback = function()
 						{
 							LoadingState.loadAndSwitchState(new MainMenuState());
 						}
 					case 'you-cant-run':
-						var video:MP4Handler = new MP4Handler();
-						video.playMP4(Paths.video('youcantruncutscene2'));
-						video.finishCallback = function()
 						{
 							LoadingState.loadAndSwitchState(new MainMenuState());
 						}
 					case 'triple-trouble':
-						var video:MP4Handler = new MP4Handler();
-						video.playMP4(Paths.video('soundtestcodes'));
-						video.finishCallback = function()
 						{
 							LoadingState.loadAndSwitchState(new MainMenuState());
 						}
@@ -5832,13 +5750,9 @@ class PlayState extends MusicBeatState
 	}
 
 	public var fuckingVolume:Float = 1;
-	public var useVideo = false;
-
-	public static var webmHandler:WebmHandler;
-
+	
 	public var playingDathing = false;
-	public var videoSprite:FlxSprite;
-
+	
 	public function focusOut()
 	{
 		if (paused)
@@ -5859,65 +5773,6 @@ class PlayState extends MusicBeatState
 	public function focusIn()
 	{
 		// nada
-	}
-
-	public function backgroundVideo(source:String) // for background videos
-	{
-		#if cpp
-		useVideo = true;
-
-		FlxG.stage.window.onFocusOut.add(focusOut);
-		FlxG.stage.window.onFocusIn.add(focusIn);
-
-		var ourSource:String = "assets/videos/daWeirdVid/dontDelete.webm";
-		WebmPlayer.SKIP_STEP_LIMIT = 90;
-		var str1:String = "WEBM SHIT";
-		webmHandler = new WebmHandler();
-		webmHandler.source(ourSource);
-		webmHandler.makePlayer();
-		webmHandler.webm.name = str1;
-
-		GlobalVideo.setWebm(webmHandler);
-
-		GlobalVideo.get().source(source);
-		GlobalVideo.get().clearPause();
-		if (GlobalVideo.isWebm)
-		{
-			GlobalVideo.get().updatePlayer();
-		}
-		GlobalVideo.get().show();
-
-		if (GlobalVideo.isWebm)
-		{
-			GlobalVideo.get().restart();
-		}
-		else
-		{
-			GlobalVideo.get().play();
-		}
-
-		var data = webmHandler.webm.bitmapData;
-
-		videoSprite = new FlxSprite(-470, -30).loadGraphic(data);
-
-		videoSprite.setGraphicSize(Std.int(videoSprite.width * 1.2));
-
-		remove(gf);
-		remove(boyfriend);
-		remove(dad);
-		add(videoSprite);
-		if (curStage != 'sonicFUNSTAGE')
-			add(gf);
-		add(boyfriend);
-		add(dad);
-
-		trace('poggers');
-
-		if (!songStarted)
-			webmHandler.pause();
-		else
-			webmHandler.resume();
-		#end
 	}
 
 	function noteMiss(direction:Int = 1, daNote:Note):Void

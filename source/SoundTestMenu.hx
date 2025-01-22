@@ -345,40 +345,6 @@ class SoundTestMenu extends MusicBeatState
 					incameo = true;
 				});
 			}
-		else if (first == 23 && second == 23) 
-			{
-				var video:MP4Handler = new MP4Handler();
-				woahmanstopspammin = false;
-				flashyWashy(true);
-				new FlxTimer().start(2, function(tmr:FlxTimer)
-				{
-					flashyWashy(false);
-					FlxG.sound.music.stop();
-	
-				});
-				new FlxTimer().start(2.1, function(tmr:FlxTimer)
-				{
-                	video.playMP4(Paths.video('Keel'));
-					incameo = true;
-				});
-			}
-		else if (first == 12 && second == 34) 
-			{
-				var video:MP4Handler = new MP4Handler();
-				woahmanstopspammin = false;
-				flashyWashy(true);
-				new FlxTimer().start(2, function(tmr:FlxTimer)
-				{
-					flashyWashy(false);
-					FlxG.sound.music.stop();
-	
-				});
-				new FlxTimer().start(2.1, function(tmr:FlxTimer)
-				{
-                	video.playMP4(Paths.video('Milky'));
-					incameo = true;
-				});
-			}
 		else if (first == 32 && second == 8) 
 		{
 			woahmanstopspammin = false;
