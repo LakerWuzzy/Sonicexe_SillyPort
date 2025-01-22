@@ -14,8 +14,6 @@ import flixel.text.FlxText;
 import flixel.util.FlxColor;
 import lime.utils.Assets;
 
-import Discord.DiscordClient;
-
 class SoundTestMenu extends MusicBeatState
 {
 	var woahmanstopspammin:Bool = true;
@@ -44,8 +42,7 @@ class SoundTestMenu extends MusicBeatState
 
     override function create()
         {
-			DiscordClient.changePresence('In the Sound Test Menu', null);
-
+			
 			new FlxTimer().start(0.1, function(tmr:FlxTimer)
 				{
 					FlxG.sound.playMusic(Paths.music('breakfast'));
