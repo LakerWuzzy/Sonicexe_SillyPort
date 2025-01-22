@@ -6670,9 +6670,6 @@ class PlayState extends MusicBeatState
 		{
 			switch (curStep)
 			{
-				case 787, 795, 902, 800, 811, 819, 823, 827, 832, 835, 839, 847, 847:
-					doStaticSign(0, false);
-					camX = -35;
 				case 768:
 					FlxTween.tween(camHUD, {alpha: 0}, 1);
 				case 801: // 800
@@ -6806,10 +6803,6 @@ class PlayState extends MusicBeatState
 						case 1152:
 							dad.playAnim('f', true);
 					}
-				case 380, 509, 637, 773, 1033, 1149, 1261, 1543, 1672, 1792, 1936:
-					tailscircle = '';
-					FlxTween.tween(dad, {x: 61.15, y: -94.75}, 0.2);
-					dad.setPosition(61.15, -94.75);
 			}
 		}
 
