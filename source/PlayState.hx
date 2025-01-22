@@ -5122,17 +5122,11 @@ class PlayState extends MusicBeatState
 							FlxG.switchState(new FreeplayState());
 						}
 					case 'too-slow':
-						{
 							LoadingState.loadAndSwitchState(new MainMenuState());
-						}
 					case 'you-cant-run':
-						{
 							LoadingState.loadAndSwitchState(new MainMenuState());
-						}
 					case 'triple-trouble':
-						{
 							LoadingState.loadAndSwitchState(new MainMenuState());
-						}
 				}
 			}
 		}
