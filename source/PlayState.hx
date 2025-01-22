@@ -5070,22 +5070,15 @@ class PlayState extends MusicBeatState
 					FlxG.sound.music.stop();
 
 					if (curSong.toLowerCase() == 'too-slow' && storyDifficulty == 2)
-					{
 						FlxG.save.data.storyProgress = 1;
-					}
+						
 					else if (curSong.toLowerCase() == 'too-slow' && storyDifficulty != 2)
-					{
 						LoadingState.loadAndSwitchState(new UnlockScreen(false, 'soundtest'));
-					}
+						
 					else if (curSong == 'you-cant-run')
 					{
 						FlxG.save.data.storyProgress = 2;
 						FlxG.save.data.soundTestUnlocked = true;
-						{
-							LoadingState.loadAndSwitchState(new PlayState());
-						}
-					}
-					else
 						LoadingState.loadAndSwitchState(new PlayState());
 
 					if (curSong == 'faker')
