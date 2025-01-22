@@ -5086,42 +5086,6 @@ class PlayState extends MusicBeatState
 							FlxG.save.data.songArray.push('black-sun');
 				}
 			}
-			else
-			{
-				trace('WENT BACK TO FREEPLAY??');
-
-				paused = true;
-
-				FlxG.sound.music.stop();
-				vocals.stop();
-
-				PlayStateChangeables.nocheese = true;
-				switch (curSong)
-				{
-					default:
-						if (!isFreeplay)
-							FlxG.switchState(new SoundTestMenu());
-						else
-						{
-							isFreeplay = false;
-							FlxG.switchState(new FreeplayState());
-						}
-					case "milk":
-						if (!isFreeplay)
-							FlxG.switchState(new MainMenuState());
-						else
-						{
-							isFreeplay = false;
-							FlxG.switchState(new FreeplayState());
-						}
-					case 'too-slow':
-							LoadingState.loadAndSwitchState(new MainMenuState());
-					case 'you-cant-run':
-							LoadingState.loadAndSwitchState(new MainMenuState());
-					case 'triple-trouble':
-							LoadingState.loadAndSwitchState(new MainMenuState());
-				}
-			}
 		}
 	}
 
