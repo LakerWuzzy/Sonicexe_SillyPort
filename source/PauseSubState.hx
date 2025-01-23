@@ -133,11 +133,11 @@ class PauseSubState extends MusicBeatSubstate
 		var songPath = 'assets/data/' + songLowercase + '/';
 
 		// Controls got really screwed :troll:
-		if (FlxG.keys.justPressed.W || FlxG.keys.justPressed.UP)
+		if (controls.UP_P || FlxG.keys.justPressed.UP)
 		{
 			changeSelection(-1);
    
-		}else if (FlxG.keys.justPressed.DOWN || FlxG.keys.justPressed.S)
+		}else if (controls.DOWN_P || FlxG.keys.justPressed.S)
 		{
 			changeSelection(1);
 		}
